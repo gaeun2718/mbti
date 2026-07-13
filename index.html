@@ -2,105 +2,120 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>학교 생활 MBTI 테스트</title>
+<title>조별과제 역할 MBTI</title>
 <style>
-    body {
-        font-family: "Arial", sans-serif;
-        background: #f0f4f8;
-        margin: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
+body {
+    font-family: "Segoe UI", sans-serif;
+    background: #e8f0e8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
 
-    .container {
-        background: white;
-        padding: 30px;
-        border-radius: 15px;
-        width: 400px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        text-align: center;
-    }
+/* 공책 느낌 */
+.container {
+    width: 420px;
+    background: #fffef8;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 5px 5px 0px #bbb;
+    position: relative;
+}
 
-    h1 {
-        color: #2c3e50;
-        margin-bottom: 10px;
-    }
+/* 왼쪽 공책 구멍 */
+.container::before {
+    content: "";
+    position: absolute;
+    left: -10px;
+    top: 20px;
+    width: 8px;
+    height: 90%;
+    background: repeating-linear-gradient(
+        white,
+        white 15px,
+        #ccc 15px,
+        #ccc 25px
+    );
+}
 
-    .question {
-        margin: 20px 0;
-        font-size: 18px;
-    }
+h1 {
+    text-align: center;
+    color: #2d4a2d;
+}
 
-    button {
-        display: block;
-        width: 100%;
-        padding: 12px;
-        margin: 8px 0;
-        border: none;
-        border-radius: 8px;
-        background: #4CAF50;
-        color: white;
-        font-size: 16px;
-        cursor: pointer;
-        transition: 0.2s;
-    }
+/* 칠판 느낌 */
+.question {
+    background: #2e5d34;
+    color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+    font-size: 17px;
+}
 
-    button:hover {
-        background: #45a049;
-    }
+/* 버튼 = 포스트잇 느낌 */
+button {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 6px;
+    background: #ffe066;
+    cursor: pointer;
+    font-size: 15px;
+    box-shadow: 2px 2px 0px #d4b400;
+    transition: 0.15s;
+}
 
-    .result {
-        font-size: 22px;
-        margin-top: 20px;
-        color: #34495e;
-    }
+button:hover {
+    transform: translateY(-2px);
+}
 
-    .school {
-        font-size: 14px;
-        color: #7f8c8d;
-        margin-bottom: 10px;
-    }
+.result {
+    margin-top: 20px;
+    font-size: 18px;
+    line-height: 1.6;
+}
 </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="school">📚 우리 학교 생활 MBTI 테스트</div>
-    <h1>나는 어떤 학생일까?</h1>
+    <h1>📚 조별과제 역할 테스트</h1>
     <div id="quiz"></div>
-    <div class="result" id="result"></div>
+    <div id="result" class="result"></div>
 </div>
 
 <script>
 const questions = [
     {
-        q: "쉬는 시간에 나는?",
+        q: "조 모임에서 나는?",
         a: [
-            { text: "친구들이랑 떠든다", type: "E" },
-            { text: "혼자 조용히 쉰다", type: "I" }
+            { text: "대화 주도하고 분위기 띄움", type: "E" },
+            { text: "조용히 듣고 필요한 말만 함", type: "I" }
         ]
     },
     {
-        q: "시험 공부할 때 나는?",
+        q: "과제 접근 방식은?",
         a: [
-            { text: "문제 많이 풀어본다", type: "S" },
-            { text: "개념 이해를 먼저 한다", type: "N" }
+            { text: "현실적이고 검증된 방법", type: "S" },
+            { text: "새로운 아이디어 시도", type: "N" }
         ]
     },
     {
-        q: "조별 과제에서 나는?",
+        q: "갈등이 생기면?",
         a: [
-            { text: "분위기 맞추는 게 중요", type: "F" },
-            { text: "효율과 결과가 중요", type: "T" }
+            { text: "논리적으로 해결", type: "T" },
+            { text: "사람 기분 먼저 생각", type: "F" }
         ]
     },
     {
-        q: "숙제 스타일은?",
+        q: "마감은?",
         a: [
-            { text: "미리미리 해둔다", type: "J" },
-            { text: "마감 직전에 한다", type: "P" }
+            { text: "계획 세워 미리 끝냄", type: "J" },
+            { text: "마감 직전에 몰아서", type: "P" }
         ]
     }
 ];
@@ -135,6 +150,28 @@ function selectAnswer(type) {
     showQuestion();
 }
 
+const roles = {
+"INTJ": "🧠 전략가\n전체 구조 설계 + 방향 설정 담당",
+"INTP": "🔍 분석가\n자료 조사 & 논리 검증 담당",
+"ENTJ": "👑 리더\n팀 총괄 + 일정 관리",
+"ENTP": "💡 아이디어 뱅크\n창의적 기획 담당",
+
+"INFJ": "🌱 조정자\n갈등 해결 + 팀 분위기 관리",
+"INFP": "🎨 감성 기획자\n스토리/디자인 방향 담당",
+"ENFJ": "🤝 팀 리더형\n사람 관리 + 발표",
+"ENFP": "🔥 분위기 메이커\n아이디어 + 발표",
+
+"ISTJ": "📋 관리자\n자료 정리 + 계획 관리",
+"ISFJ": "🛠 서포터\n조용히 실무 처리",
+"ESTJ": "📊 총괄 관리자\n일 분배 + 진행 관리",
+"ESFJ": "🎤 발표 담당\n정리 + 발표",
+
+"ISTP": "⚙️ 실무 해결사\n문제 해결 + 제작",
+"ISFP": "🎨 디자이너\n비주얼 & 감성 표현",
+"ESTP": "🚀 실행가\n빠른 진행 + 현장 대응",
+"ESFP": "🌟 발표 & 분위기 담당\n재미 + 전달력"
+};
+
 function showResult() {
     const quiz = document.getElementById("quiz");
     const res = document.getElementById("result");
@@ -142,18 +179,9 @@ function showResult() {
     quiz.innerHTML = "";
 
     res.innerHTML = `
-        🎉 너의 학교 MBTI는 <br><b>${result}</b>!<br><br>
-        ${getDescription(result)}
+        🎉 너의 유형: <b>${result}</b><br><br>
+        ${roles[result] || "✨ 독특한 역할을 맡는 타입!"}
     `;
-}
-
-function getDescription(type) {
-    if (type === "ESTJ") return "📋 반장 스타일! 책임감 MAX";
-    if (type === "INFP") return "🎨 감성적인 사색가";
-    if (type === "ENTP") return "🔥 토론 좋아하는 아이디어 뱅크";
-    if (type === "ISFJ") return "🤝 조용한 배려왕";
-
-    return "✨ 독특한 너만의 학생 스타일!";
 }
 
 showQuestion();
