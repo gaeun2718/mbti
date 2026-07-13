@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>학교 생활 MBTI 테스트</title>
+<style>
+    body {
+        font-family: "Arial", sans-serif;
+        background: #f0f4f8;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .container {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        width: 400px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    h1 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+
+    .question {
+        margin: 20px 0;
+        font-size: 18px;
+    }
+
+    button {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 8px;
+        background: #4CAF50;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        background: #45a049;
+    }
+
+    .result {
+        font-size: 22px;
+        margin-top: 20px;
+        color: #34495e;
+    }
+
+    .school {
+        font-size: 14px;
+        color: #7f8c8d;
+        margin-bottom: 10px;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="school">📚 우리 학교 생활 MBTI 테스트</div>
+    <h1>나는 어떤 학생일까?</h1>
+    <div id="quiz"></div>
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+const questions = [
+    {
+        q: "쉬는 시간에 나는?",
+        a: [
+            { text: "친구들이랑 떠든다", type: "E" },
+            { text: "혼자 조용히 쉰다", type: "I" }
+        ]
+    },
+    {
+        q: "시험 공부할 때 나는?",
+        a: [
+            { text: "문제 많이 풀어본다", type: "S" },
+            { text: "개념 이해를 먼저 한다", type: "N" }
+        ]
+    },
+    {
+        q: "조별 과제에서 나는?",
+        a: [
+            { text: "분위기 맞추는 게 중요", type: "F" },
+            { text: "효율과 결과가 중요", type: "T" }
+        ]
+    },
+    {
+        q: "숙제 스타일은?",
+        a: [
+            { text: "미리미리 해둔다", type: "J" },
+            { text: "마감 직전에 한다", type: "P" }
+        ]
+    }
+];
+
+let current = 0;
+let result = "";
+
+function showQuestion() {
+    const quiz = document.getElementById("quiz");
+    quiz.innerHTML = "";
+
+    if (current < questions.length) {
+        const q = document.createElement("div");
+        q.className = "question";
+        q.innerText = questions[current].q;
+        quiz.appendChild(q);
+
+        questions[current].a.forEach(answer => {
+            const btn = document.createElement("button");
+            btn.innerText = answer.text;
+            btn.onclick = () => selectAnswer(answer.type);
+            quiz.appendChild(btn);
+        });
+    } else {
+        showResult();
+    }
+}
+
+function selectAnswer(type) {
+    result += type;
+    current++;
+    showQuestion();
+}
+
+function showResult() {
+    const quiz = document.getElementById("quiz");
+    const res = document.getElementById("result");
+
+    quiz.innerHTML = "";
+
+    res.innerHTML = `
+        🎉 너의 학교 MBTI는 <br><b>${result}</b>!<br><br>
+        ${getDescription(result)}
+    `;
+}
+
+function getDescription(type) {
+    if (type === "ESTJ") return "📋 반장 스타일! 책임감 MAX";
+    if (type === "INFP") return "🎨 감성적인 사색가";
+    if (type === "ENTP") return "🔥 토론 좋아하는 아이디어 뱅크";
+    if (type === "ISFJ") return "🤝 조용한 배려왕";
+
+    return "✨ 독특한 너만의 학생 스타일!";
+}
+
+showQuestion();
+</script>
+
+</body>
+</html>
