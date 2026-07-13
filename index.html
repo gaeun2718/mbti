@@ -2,141 +2,175 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>조별과제 역할 MBTI</title>
+<title>조별과제 역할 테스트</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600&display=swap" rel="stylesheet">
+
 <style>
 body {
-    font-family: "Segoe UI", sans-serif;
-    background: #e8f0e8;
+    font-family: 'Pretendard', sans-serif;
+    background: linear-gradient(135deg, #dbeafe, #fce7f3);
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
 }
 
-/* 공책 느낌 */
 .container {
     width: 420px;
-    background: #fffef8;
-    border: 2px solid #ddd;
-    border-radius: 10px;
+    background: white;
+    border-radius: 20px;
     padding: 25px;
-    box-shadow: 5px 5px 0px #bbb;
-    position: relative;
-}
-
-/* 왼쪽 공책 구멍 */
-.container::before {
-    content: "";
-    position: absolute;
-    left: -10px;
-    top: 20px;
-    width: 8px;
-    height: 90%;
-    background: repeating-linear-gradient(
-        white,
-        white 15px,
-        #ccc 15px,
-        #ccc 25px
-    );
-}
-
-h1 {
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
     text-align: center;
-    color: #2d4a2d;
 }
 
-/* 칠판 느낌 */
+h1 { font-size: 22px; }
+.subtitle { font-size: 14px; color: #888; margin-bottom: 15px; }
+
+.progress {
+    height: 8px;
+    background: #eee;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #6366f1, #ec4899);
+    transition: 0.3s;
+}
+
 .question {
-    background: #2e5d34;
-    color: #fff;
-    padding: 15px;
-    border-radius: 8px;
-    margin: 20px 0;
+    background: #f9fafb;
+    padding: 18px;
+    border-radius: 15px;
+    margin-bottom: 15px;
     font-size: 17px;
 }
 
-/* 버튼 = 포스트잇 느낌 */
 button {
     width: 100%;
-    padding: 12px;
-    margin: 8px 0;
+    padding: 13px;
+    margin: 7px 0;
     border: none;
-    border-radius: 6px;
-    background: #ffe066;
+    border-radius: 12px;
+    background: #f1f5f9;
     cursor: pointer;
-    font-size: 15px;
-    box-shadow: 2px 2px 0px #d4b400;
-    transition: 0.15s;
+    transition: 0.2s;
 }
 
 button:hover {
-    transform: translateY(-2px);
+    background: #e0e7ff;
+    transform: scale(1.02);
 }
 
-.result {
-    margin-top: 20px;
-    font-size: 18px;
-    line-height: 1.6;
+.result-card {
+    padding: 20px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #6366f1, #ec4899);
+    color: white;
+}
+
+.retry {
+    margin-top: 15px;
+    background: white;
+    color: #333;
 }
 </style>
 </head>
+
 <body>
 
 <div class="container">
     <h1>📚 조별과제 역할 테스트</h1>
+    <div class="subtitle">너의 팀 내 포지션은?</div>
+    <div class="progress"><div class="progress-bar" id="bar"></div></div>
     <div id="quiz"></div>
-    <div id="result" class="result"></div>
 </div>
 
 <script>
 const questions = [
-    {
-        q: "조 모임에서 나는?",
-        a: [
-            { text: "대화 주도하고 분위기 띄움", type: "E" },
-            { text: "조용히 듣고 필요한 말만 함", type: "I" }
-        ]
-    },
-    {
-        q: "과제 접근 방식은?",
-        a: [
-            { text: "현실적이고 검증된 방법", type: "S" },
-            { text: "새로운 아이디어 시도", type: "N" }
-        ]
-    },
-    {
-        q: "갈등이 생기면?",
-        a: [
-            { text: "논리적으로 해결", type: "T" },
-            { text: "사람 기분 먼저 생각", type: "F" }
-        ]
-    },
-    {
-        q: "마감은?",
-        a: [
-            { text: "계획 세워 미리 끝냄", type: "J" },
-            { text: "마감 직전에 몰아서", type: "P" }
-        ]
-    }
+    { q:"조 모임에서 나는?", a:[
+        {text:"분위기 주도", type:"E"},
+        {text:"조용히 참여", type:"I"} ]},
+    { q:"과제 접근은?", a:[
+        {text:"현실적인 방법", type:"S"},
+        {text:"아이디어 중심", type:"N"} ]},
+    { q:"갈등 상황?", a:[
+        {text:"논리적으로 해결", type:"T"},
+        {text:"감정 고려", type:"F"} ]},
+    { q:"마감 스타일?", a:[
+        {text:"미리 끝냄", type:"J"},
+        {text:"마감 직전", type:"P"} ]}
 ];
 
 let current = 0;
 let result = "";
 
-function showQuestion() {
-    const quiz = document.getElementById("quiz");
-    quiz.innerHTML = "";
+const roles = {
+"INTJ":"🧠 전략 설계자 — 전체 구조 설계",
+"INTP":"🔍 분석가 — 자료 조사",
+"ENTJ":"👑 리더 — 일정 관리",
+"ENTP":"💡 아이디어 담당",
 
-    if (current < questions.length) {
+"INFJ":"🌱 조정자 — 갈등 해결",
+"INFP":"🎨 감성 기획자",
+"ENFJ":"🤝 발표 + 팀 관리",
+"ENFP":"🔥 분위기 + 아이디어",
+
+"ISTJ":"📋 자료 정리",
+"ISFJ":"🛠 서포터",
+"ESTJ":"📊 총괄 관리자",
+"ESFJ":"🎤 발표 담당",
+
+"ISTP":"⚙️ 문제 해결",
+"ISFP":"🎨 디자인",
+"ESTP":"🚀 실행 담당",
+"ESFP":"🌟 발표 + 분위기"
+};
+
+/* 👇 추가된 궁합 데이터 */
+const synergy = {
+"INTJ":"ENFP, ESFP → 실행력과 분위기를 보완해줌",
+"INTP":"ENTJ, ESTJ → 아이디어를 현실로 만들어줌",
+"ENTJ":"INFP, ISFP → 감성적 균형 맞춰줌",
+"ENTP":"ISTJ, ISFJ → 아이디어를 정리해줌",
+
+"INFJ":"ESTP, ESFP → 활력을 불어넣어줌",
+"INFP":"ENTJ, ESTJ → 방향을 잡아줌",
+"ENFJ":"ISTP, INTP → 논리 보완",
+"ENFP":"INTJ, INFJ → 깊이 있는 방향 제공",
+
+"ISTJ":"ENFP, ENTP → 아이디어 제공",
+"ISFJ":"ESTP, ESFP → 추진력 보완",
+"ESTJ":"INFP, ISFP → 인간적인 균형",
+"ESFJ":"INTP, ISTP → 논리 보완",
+
+"ISTP":"ENFJ, ESFJ → 팀워크 강화",
+"ISFP":"ENTJ, ESTJ → 실행 방향 제공",
+"ESTP":"INFJ, ISFJ → 안정성 보완",
+"ESFP":"INTJ, ISTJ → 체계 보완"
+};
+
+function showQuestion(){
+    const quiz = document.getElementById("quiz");
+    const bar = document.getElementById("bar");
+
+    bar.style.width = ((current/questions.length)*100)+"%";
+    quiz.innerHTML="";
+
+    if(current < questions.length){
         const q = document.createElement("div");
-        q.className = "question";
+        q.className="question";
         q.innerText = questions[current].q;
         quiz.appendChild(q);
 
-        questions[current].a.forEach(answer => {
-            const btn = document.createElement("button");
-            btn.innerText = answer.text;
-            btn.onclick = () => selectAnswer(answer.type);
+        questions[current].a.forEach(ans=>{
+            const btn=document.createElement("button");
+            btn.innerText=ans.text;
+            btn.onclick=()=>select(ans.type);
             quiz.appendChild(btn);
         });
     } else {
@@ -144,43 +178,25 @@ function showQuestion() {
     }
 }
 
-function selectAnswer(type) {
-    result += type;
+function select(t){
+    result += t;
     current++;
     showQuestion();
 }
 
-const roles = {
-"INTJ": "🧠 전략가\n전체 구조 설계 + 방향 설정 담당",
-"INTP": "🔍 분석가\n자료 조사 & 논리 검증 담당",
-"ENTJ": "👑 리더\n팀 총괄 + 일정 관리",
-"ENTP": "💡 아이디어 뱅크\n창의적 기획 담당",
+function showResult(){
+    const quiz=document.getElementById("quiz");
+    document.getElementById("bar").style.width="100%";
 
-"INFJ": "🌱 조정자\n갈등 해결 + 팀 분위기 관리",
-"INFP": "🎨 감성 기획자\n스토리/디자인 방향 담당",
-"ENFJ": "🤝 팀 리더형\n사람 관리 + 발표",
-"ENFP": "🔥 분위기 메이커\n아이디어 + 발표",
-
-"ISTJ": "📋 관리자\n자료 정리 + 계획 관리",
-"ISFJ": "🛠 서포터\n조용히 실무 처리",
-"ESTJ": "📊 총괄 관리자\n일 분배 + 진행 관리",
-"ESFJ": "🎤 발표 담당\n정리 + 발표",
-
-"ISTP": "⚙️ 실무 해결사\n문제 해결 + 제작",
-"ISFP": "🎨 디자이너\n비주얼 & 감성 표현",
-"ESTP": "🚀 실행가\n빠른 진행 + 현장 대응",
-"ESFP": "🌟 발표 & 분위기 담당\n재미 + 전달력"
-};
-
-function showResult() {
-    const quiz = document.getElementById("quiz");
-    const res = document.getElementById("result");
-
-    quiz.innerHTML = "";
-
-    res.innerHTML = `
-        🎉 너의 유형: <b>${result}</b><br><br>
-        ${roles[result] || "✨ 독특한 역할을 맡는 타입!"}
+    quiz.innerHTML = `
+        <div class="result-card">
+            <h2>${result}</h2>
+            <p>${roles[result]}</p>
+            <hr style="opacity:0.3; margin:15px 0;">
+            <p>🤝 잘 맞는 팀원</p>
+            <p>${synergy[result]}</p>
+            <button class="retry" onclick="location.reload()">다시하기</button>
+        </div>
     `;
 }
 
