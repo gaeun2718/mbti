@@ -1,207 +1,190 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<title>조별과제 역할 테스트</title>
+  <meta charset="UTF-8">
+  <title>조별과제 MBTI 테스트</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600&display=swap" rel="stylesheet">
+  <!-- 폰트 -->
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSans.css" rel="stylesheet">
 
-<style>
-body {
-    font-family: 'Pretendard', sans-serif;
-    background: linear-gradient(135deg, #dbeafe, #fce7f3);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Pretendard", sans-serif;
+    }
 
-.container {
-    width: 420px;
-    background: white;
-    border-radius: 20px;
-    padding: 25px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-    text-align: center;
-}
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+    }
 
-h1 { font-size: 22px; }
-.subtitle { font-size: 14px; color: #888; margin-bottom: 15px; }
+    /* 📸 블러 교실 배경 */
+    body::before {
+      content: "";
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: url('https://images.unsplash.com/photo-1588072432836-e10032774350') center/cover no-repeat;
+      filter: blur(8px) brightness(0.7);
+      z-index: -1;
+    }
 
-.progress {
-    height: 8px;
-    background: #eee;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 20px;
-}
-.progress-bar {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #6366f1, #ec4899);
-    transition: 0.3s;
-}
+    .container {
+      width: 90%;
+      max-width: 500px;
+      padding: 30px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      text-align: center;
+    }
 
-.question {
-    background: #f9fafb;
-    padding: 18px;
-    border-radius: 15px;
-    margin-bottom: 15px;
-    font-size: 17px;
-}
+    h1 {
+      font-family: "GmarketSans", sans-serif;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
 
-button {
-    width: 100%;
-    padding: 13px;
-    margin: 7px 0;
-    border: none;
-    border-radius: 12px;
-    background: #f1f5f9;
-    cursor: pointer;
-    transition: 0.2s;
-}
+    .question {
+      margin: 20px 0;
+      font-size: 18px;
+    }
 
-button:hover {
-    background: #e0e7ff;
-    transform: scale(1.02);
-}
+    button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
 
-.result-card {
-    padding: 20px;
-    border-radius: 20px;
-    background: linear-gradient(135deg, #6366f1, #ec4899);
-    color: white;
-}
+    button:hover {
+      background: rgba(255,255,255,0.35);
+      transform: scale(1.03);
+    }
 
-.retry {
-    margin-top: 15px;
-    background: white;
-    color: #333;
-}
-</style>
+    .result {
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .mbti {
+      font-size: 26px;
+      font-weight: bold;
+      margin: 10px 0;
+      font-family: "GmarketSans";
+    }
+  </style>
 </head>
 
 <body>
-
-<div class="container">
-    <h1>📚 조별과제 역할 테스트</h1>
-    <div class="subtitle">너의 팀 내 포지션은?</div>
-    <div class="progress"><div class="progress-bar" id="bar"></div></div>
-    <div id="quiz"></div>
-</div>
+  <div class="container">
+    <h1>📚 조별과제 MBTI 테스트</h1>
+    <div id="app"></div>
+  </div>
 
 <script>
 const questions = [
-    { q:"조 모임에서 나는?", a:[
-        {text:"분위기 주도", type:"E"},
-        {text:"조용히 참여", type:"I"} ]},
-    { q:"과제 접근은?", a:[
-        {text:"현실적인 방법", type:"S"},
-        {text:"아이디어 중심", type:"N"} ]},
-    { q:"갈등 상황?", a:[
-        {text:"논리적으로 해결", type:"T"},
-        {text:"감정 고려", type:"F"} ]},
-    { q:"마감 스타일?", a:[
-        {text:"미리 끝냄", type:"J"},
-        {text:"마감 직전", type:"P"} ]}
+  {
+    q: "조별과제 시작! 너는?",
+    a: ["친구들 모아서 바로 시작함", "조용히 상황 파악부터"]
+  },
+  {
+    q: "자료 조사할 때?",
+    a: ["빠르게 여러 개 찾기", "깊게 하나 파기"]
+  },
+  {
+    q: "발표 준비는?",
+    a: ["아이디어 중심", "논리 정리 중심"]
+  },
+  {
+    q: "마감 직전 행동은?",
+    a: ["끝까지 수정함", "이미 끝냈으니 쉼"]
+  }
 ];
 
-let current = 0;
-let result = "";
+let step = 0;
+let score = [0,0,0,0];
 
-const roles = {
-"INTJ":"🧠 전략 설계자 — 전체 구조 설계",
-"INTP":"🔍 분석가 — 자료 조사",
-"ENTJ":"👑 리더 — 일정 관리",
-"ENTP":"💡 아이디어 담당",
+function render() {
+  const app = document.getElementById("app");
 
-"INFJ":"🌱 조정자 — 갈등 해결",
-"INFP":"🎨 감성 기획자",
-"ENFJ":"🤝 발표 + 팀 관리",
-"ENFP":"🔥 분위기 + 아이디어",
+  if (step < questions.length) {
+    const q = questions[step];
 
-"ISTJ":"📋 자료 정리",
-"ISFJ":"🛠 서포터",
-"ESTJ":"📊 총괄 관리자",
-"ESFJ":"🎤 발표 담당",
-
-"ISTP":"⚙️ 문제 해결",
-"ISFP":"🎨 디자인",
-"ESTP":"🚀 실행 담당",
-"ESFP":"🌟 발표 + 분위기"
-};
-
-/* 👇 추가된 궁합 데이터 */
-const synergy = {
-"INTJ":"ENFP, ESFP → 실행력과 분위기를 보완해줌",
-"INTP":"ENTJ, ESTJ → 아이디어를 현실로 만들어줌",
-"ENTJ":"INFP, ISFP → 감성적 균형 맞춰줌",
-"ENTP":"ISTJ, ISFJ → 아이디어를 정리해줌",
-
-"INFJ":"ESTP, ESFP → 활력을 불어넣어줌",
-"INFP":"ENTJ, ESTJ → 방향을 잡아줌",
-"ENFJ":"ISTP, INTP → 논리 보완",
-"ENFP":"INTJ, INFJ → 깊이 있는 방향 제공",
-
-"ISTJ":"ENFP, ENTP → 아이디어 제공",
-"ISFJ":"ESTP, ESFP → 추진력 보완",
-"ESTJ":"INFP, ISFP → 인간적인 균형",
-"ESFJ":"INTP, ISTP → 논리 보완",
-
-"ISTP":"ENFJ, ESFJ → 팀워크 강화",
-"ISFP":"ENTJ, ESTJ → 실행 방향 제공",
-"ESTP":"INFJ, ISFJ → 안정성 보완",
-"ESFP":"INTJ, ISTJ → 체계 보완"
-};
-
-function showQuestion(){
-    const quiz = document.getElementById("quiz");
-    const bar = document.getElementById("bar");
-
-    bar.style.width = ((current/questions.length)*100)+"%";
-    quiz.innerHTML="";
-
-    if(current < questions.length){
-        const q = document.createElement("div");
-        q.className="question";
-        q.innerText = questions[current].q;
-        quiz.appendChild(q);
-
-        questions[current].a.forEach(ans=>{
-            const btn=document.createElement("button");
-            btn.innerText=ans.text;
-            btn.onclick=()=>select(ans.type);
-            quiz.appendChild(btn);
-        });
-    } else {
-        showResult();
-    }
-}
-
-function select(t){
-    result += t;
-    current++;
-    showQuestion();
-}
-
-function showResult(){
-    const quiz=document.getElementById("quiz");
-    document.getElementById("bar").style.width="100%";
-
-    quiz.innerHTML = `
-        <div class="result-card">
-            <h2>${result}</h2>
-            <p>${roles[result]}</p>
-            <hr style="opacity:0.3; margin:15px 0;">
-            <p>🤝 잘 맞는 팀원</p>
-            <p>${synergy[result]}</p>
-            <button class="retry" onclick="location.reload()">다시하기</button>
-        </div>
+    app.innerHTML = `
+      <div class="question">${q.q}</div>
+      <button onclick="answer(0)">${q.a[0]}</button>
+      <button onclick="answer(1)">${q.a[1]}</button>
     `;
+  } else {
+    showResult();
+  }
 }
 
-showQuestion();
-</script>
+function answer(choice) {
+  score[step] = choice;
+  step++;
+  render();
+}
 
+function getMBTI() {
+  return [
+    score[0] === 0 ? "E" : "I",
+    score[1] === 0 ? "N" : "S",
+    score[2] === 0 ? "F" : "T",
+    score[3] === 0 ? "P" : "J"
+  ].join("");
+}
+
+const resultData = {
+  "INTJ": ["전략가형 학생", "기획 + 전체 설계 담당", "ENTP, ENFP"],
+  "INTP": ["분석형 학생", "자료 조사 + 아이디어", "ENTJ, ENFJ"],
+  "ENTJ": ["리더형 학생", "팀장 + 발표 총괄", "INTP, INFP"],
+  "ENTP": ["아이디어 폭발형", "기획 + 창의 담당", "INTJ, INFJ"],
+
+  "INFJ": ["조용한 기획자", "스토리 구성", "ENFP, ENTP"],
+  "INFP": ["감성형 학생", "디자인 + 스토리", "ENFJ, ENTJ"],
+  "ENFJ": ["분위기 메이커", "발표 + 조율", "INFP, ISFP"],
+  "ENFP": ["열정형 학생", "아이디어 + 발표", "INFJ, INTJ"],
+
+  "ISTJ": ["책임감 MAX", "자료 정리 + 문서", "ESFP, ESTP"],
+  "ISFJ": ["서포트 장인", "정리 + 보조", "ESFP, ESTP"],
+  "ESTJ": ["관리형 리더", "진행 + 일정관리", "ISTP, ISFP"],
+  "ESFJ": ["협력형 학생", "분위기 + 팀워크", "ISFP, ISTP"],
+
+  "ISTP": ["실행력 갑", "실습 + 제작", "ESTJ, ESFJ"],
+  "ISFP": ["감각적 학생", "디자인 담당", "ESFJ, ESTJ"],
+  "ESTP": ["행동파", "발표 + 실행", "ISFJ, ISTJ"],
+  "ESFP": ["인싸형", "발표 + 분위기", "ISFJ, ISTJ"]
+};
+
+function showResult() {
+  const mbti = getMBTI();
+  const data = resultData[mbti];
+
+  document.getElementById("app").innerHTML = `
+    <div class="mbti">${mbti}</div>
+    <div class="result">
+      📌 너는 <b>${data[0]}</b><br><br>
+      🎯 추천 역할: <b>${data[1]}</b><br><br>
+      👥 같은 조 꿀조합: <b>${data[2].join(", ")}</b>
+    </div>
+  `;
+}
+
+render();
+</script>
 </body>
 </html>
